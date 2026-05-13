@@ -1,0 +1,8 @@
+node_modules/
+lib/
+dist/
+release/
+solution/
+temp/
+.heft/
+*.log

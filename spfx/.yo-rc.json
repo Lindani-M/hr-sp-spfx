@@ -1,0 +1,19 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "isCreatingSolution": true,
+    "nodeVersion": "18.18.2",
+    "packageManager": "npm",
+    "solutionName": "talent-gpt",
+    "solutionShortDescription": "TalentGPT MSc Research Assistant",
+    "skipPrompts": false,
+    "sdkVersions": {
+      "@microsoft/sp-build-web": "1.18.2"
+    },
+    "version": "1.18.2",
+    "libraryName": "talent-gpt",
+    "libraryId": "f34a7d12-8e91-4b3c-b1c2-9a5e8d4f7023",
+    "environment": "spo",
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

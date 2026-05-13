@@ -1,0 +1,123 @@
+@import '../_variables';
+
+.sidebar {
+  width: 200px;
+  flex-shrink: 0;
+  background: $white;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px 12px;
+  overflow: hidden;
+  border-right: 1px solid $border;
+}
+
+// ── Logo card ─────────────────────────────────────────────────────────────
+.logoCard {
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $white;
+  box-shadow: 0 1px 4px rgba(22, 41, 81, 0.07);
+  flex-shrink: 0;
+}
+
+.logoImg {
+  width: 100%;
+  max-width: 110px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+// ── App identity ───────────────────────────────────────────────────────────
+.identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 7px 0 1px;
+}
+
+.appName {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: $navy;
+  letter-spacing: -0.01em;
+}
+
+.appTag {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: $gold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+// ── Rule ──────────────────────────────────────────────────────────────────
+.rule {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(118, 104, 164, 0.25) 30%,
+    rgba(201, 126, 159, 0.18) 70%,
+    transparent
+  );
+  margin: 7px 0;
+}
+
+// ── Sections ───────────────────────────────────────────────────────────────
+.section {
+  margin-bottom: 8px;
+}
+
+.sectionLabel {
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: $gold;
+  margin-bottom: 4px !important;
+}
+
+.sectionDesc {
+  font-size: 0.7rem;
+  line-height: 1.45;
+  color: $text-muted;
+}
+
+// ── Topic pills ────────────────────────────────────────────────────────────
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pill {
+  font-size: 0.65rem;
+  font-weight: 500;
+  padding: 4px 9px;
+  border-radius: 20px;
+  background: rgba(118, 104, 164, 0.08);
+  color: $gold;
+  border: 1px solid rgba(118, 104, 164, 0.22);
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+}
+
+// ── Footer ─────────────────────────────────────────────────────────────────
+.footer {
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid $border;
+}
+
+.powered {
+  font-size: 0.68rem;
+  color: $text-muted;
+  text-align: center;
+}

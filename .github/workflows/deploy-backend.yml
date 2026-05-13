@@ -1,0 +1,99 @@
+name: Deploy Backend → Azure App Service
+
+# Triggers on changes to backend files on main, or manually
+on:
+  push:
+    branches: [develop]
+    paths:
+      - 'app.py'
+      - 'requirements.txt'
+      - 'backend/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout ────────────────────────────────────────────────────────
+      - uses: actions/checkout@v4
+
+      # ── 2. Python setup ────────────────────────────────────────────────────
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      # ── 3. Install & verify deps ───────────────────────────────────────────
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # ── 4. Package only the backend files (exclude frontend, venv, etc.) ──
+      - name: Create deployment zip
+        run: |
+          zip -r deploy.zip app.py requirements.txt backend/ \
+            --exclude "*.pyc" \
+            --exclude "*__pycache__*" \
+            --exclude "*.ipynb"
+
+      # ── 5. Login to Azure (service principal) ─────────────────────────────
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # ── 6. Push all runtime env-vars to App Service Application Settings ──
+      #    These are read by app.py via os.getenv() / python-dotenv at startup.
+      #    SCM_DO_BUILD_DURING_DEPLOYMENT=true tells Oryx to run pip install
+      #    when the zip is deployed (without this, packages are not installed).
+      - name: Configure App Service application settings
+        uses: azure/appservice-settings@v1
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          resource-group-name: ${{ secrets.AZURE_RESOURCE_GROUP }}
+          app-settings-json: |
+            [
+              { "name": "SCM_DO_BUILD_DURING_DEPLOYMENT", "value": "true",  "slotSetting": false },
+              { "name": "ENABLE_ORYX_BUILD",              "value": "true",  "slotSetting": false },
+              { "name": "SP_TENANT_ID",            "value": "${{ secrets.SP_TENANT_ID }}",            "slotSetting": false },
+              { "name": "SP_CLIENT_ID",            "value": "${{ secrets.SP_CLIENT_ID }}",            "slotSetting": false },
+              { "name": "SP_CLIENT_SECRET",        "value": "${{ secrets.SP_CLIENT_SECRET }}",        "slotSetting": false },
+              { "name": "SP_HOSTNAME",             "value": "${{ secrets.SP_HOSTNAME }}",             "slotSetting": false },
+              { "name": "SP_SITE_PATH",            "value": "${{ secrets.SP_SITE_PATH }}",            "slotSetting": false },
+              { "name": "AZURE_OAI_ENDPOINT",      "value": "${{ secrets.AZURE_OAI_ENDPOINT }}",      "slotSetting": false },
+              { "name": "AZURE_OAI_KEY",           "value": "${{ secrets.AZURE_OAI_KEY }}",           "slotSetting": false },
+              { "name": "EMBED_DEPLOYMENT",        "value": "${{ secrets.EMBED_DEPLOYMENT }}",        "slotSetting": false },
+              { "name": "CHAT_DEPLOYMENT",         "value": "${{ secrets.CHAT_DEPLOYMENT }}",         "slotSetting": false },
+              { "name": "SEARCH_ENDPOINT",         "value": "${{ secrets.SEARCH_ENDPOINT }}",         "slotSetting": false },
+              { "name": "SEARCH_KEY",              "value": "${{ secrets.SEARCH_KEY }}",              "slotSetting": false },
+              { "name": "SEARCH_INDEX",            "value": "${{ secrets.SEARCH_INDEX }}",            "slotSetting": false },
+              { "name": "SEARCH_API_VERSION",      "value": "${{ secrets.SEARCH_API_VERSION }}",      "slotSetting": false },
+              { "name": "CLAUDE_ENDPOINT",         "value": "${{ secrets.CLAUDE_ENDPOINT }}",         "slotSetting": false },
+              { "name": "CLAUDE_API_KEY",          "value": "${{ secrets.CLAUDE_API_KEY }}",          "slotSetting": false },
+              { "name": "CLAUDE_DEPLOYMENT_NAME",  "value": "${{ secrets.CLAUDE_DEPLOYMENT_NAME }}",  "slotSetting": false },
+              { "name": "ALLOWED_ORIGINS",         "value": "${{ secrets.ALLOWED_ORIGINS }}",         "slotSetting": false },
+              { "name": "WEBSITES_PORT",           "value": "8000",                                   "slotSetting": false },
+              { "name": "STARTUP_COMMAND",         "value": "python -m uvicorn app:app --host 0.0.0.0 --port 8000", "slotSetting": false }
+            ]
+
+      # ── 7. Set startup command (separate from app settings) ─────────────────
+      - name: Set startup command
+        run: |
+          az webapp config set \
+            --name ${{ secrets.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --startup-file "python -m uvicorn app:app --host 0.0.0.0 --port 8000"
+
+      # ── 8. Deploy code via Kudu endpoint (triggers Oryx pip install) ────────
+      - name: Deploy to Azure App Service
+        run: |
+          az webapp deploy \
+            --name ${{ secrets.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --src-path deploy.zip \
+            --type zip \
+            --async false

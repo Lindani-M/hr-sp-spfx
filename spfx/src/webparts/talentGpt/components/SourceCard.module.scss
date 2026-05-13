@@ -1,0 +1,123 @@
+@import '../_variables';
+
+.wrapper {
+  margin-top: 14px;
+  border-top: 1px solid $border;
+  padding-top: 12px;
+}
+
+.heading {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: $gold;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon { font-size: 0.9rem; }
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid $border;
+  border-left: 3px solid $gold;
+  background: $surface;
+  transition: background 0.15s, border-left-color 0.15s;
+  cursor: pointer;
+
+  &:hover {
+    background: $surface-hover;
+    border-left-color: $gold-light;
+
+    .externalIcon {
+      color: $navy;
+    }
+  }
+}
+
+.rowIndex {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: $navy;
+  min-width: 24px;
+  padding-top: 2px;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: $navy;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.externalIcon {
+  flex-shrink: 0;
+  color: $text-muted;
+  transition: color 0.15s;
+}
+
+.barRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.relevanceLabel {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: $text-muted;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.bar {
+  flex: 1;
+  height: 4px;
+  background: $border;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: linear-gradient(90deg, $gold, $pink);
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
+.score {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: $navy;
+  white-space: nowrap;
+}
